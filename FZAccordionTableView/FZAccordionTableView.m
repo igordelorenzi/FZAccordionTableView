@@ -70,6 +70,7 @@
 
 @property (strong, nonatomic) NSMutableSet *openedSections;
 @property (strong, nonatomic) NSMutableDictionary *numOfRowsForSection;
+@property (assign, atomic, getter=isAnimating) BOOL animating;
 
 @end
 
@@ -203,7 +204,7 @@
 - (void)headerView:(FZAccordionTableViewHeaderView *)sectionHeaderView didSelectHeaderInSection:(NSInteger)section {
     
     // Do not interact with sections that are always opened
-    if ([self isAlwaysOpenedSection:section]) {
+    if ([self isAlwaysOpenedSection:section] || self.isAnimating) {
         return;
     }
     
@@ -269,7 +270,9 @@
     
     [self addOpenedSection:section];
     [self beginUpdates];
+    self.animating = YES;
     [CATransaction setCompletionBlock:^{
+        self.animating = NO;
         if ([self.subclassDelegate respondsToSelector:@selector(tableView:didOpenSection:withHeader:)]) {
             [self.subclassDelegate tableView:self didOpenSection:section withHeader:sectionHeaderView];
         }
@@ -285,7 +288,9 @@
     
     [self removeOpenedSection:section];
     [self beginUpdates];
+    self.animating = YES;
     [CATransaction setCompletionBlock: ^{
+        self.animating = NO;
         if ([self.subclassDelegate respondsToSelector:@selector(tableView:didCloseSection:withHeader:)]) {
             [self.subclassDelegate tableView:self didCloseSection:section withHeader:sectionHeaderView];
         }
@@ -328,7 +333,9 @@
         [self removeOpenedSection:sectionToClose.integerValue];
         
         [self beginUpdates];
+        self.animating = YES;
         [CATransaction setCompletionBlock:^{
+            self.animating = NO;
             if ([self.subclassDelegate respondsToSelector:@selector(tableView:didCloseSection:withHeader:)]) {
                 [self.subclassDelegate tableView:self didCloseSection:sectionToClose.integerValue withHeader:[self headerViewForSection:sectionToClose.integerValue]];
             }
