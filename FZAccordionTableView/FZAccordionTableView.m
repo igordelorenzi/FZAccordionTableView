@@ -228,8 +228,6 @@
     // Create an array of index paths that will be inserted/removed
     NSArray *indexPathsToModify = [self getIndexPathsForSection:section];
     
-    [self beginUpdates];
-    
     // Insert/remove rows to simulate opening/closing of a header
     if (!openSection) {
         [self openSection:section withHeaderView:sectionHeaderView andIndexPaths:indexPathsToModify];
@@ -242,8 +240,6 @@
     if (!self.allowMultipleSectionsOpen && !openSection) {
         [self autoCollapseAllSectionsExceptSection:section];
     }
-    
-    [self endUpdates];
 }
 
 - (void)openSection:(NSInteger)section withHeaderView:(FZAccordionTableViewHeaderView *)sectionHeaderView andIndexPaths:(NSArray *)indexPathsToModify {
